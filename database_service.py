@@ -76,7 +76,7 @@ def database_server():
             elif command == "delete_paycheck":
                 cursor.execute("DELETE FROM paychecks WHERE ID = ?", (message["id"]))
                 conn.commit()
-                response = {"status": "succuss", "message": "Paycheck deleted"}
+                response = {"status": "success", "message": "Paycheck deleted"}
                 print("Deleted paycheck from database")
             elif command == "update_paycheck":
                 cursor.execute("UPDATE paycheck SET employee_id = ?, hours = ?, pay = ? WHERE id = ?",
