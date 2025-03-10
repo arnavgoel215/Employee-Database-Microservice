@@ -59,7 +59,7 @@ def database_server():
                 print("Deleted employee from database")
             elif command == "update_employee":
                 cursor.execute("UPDATE employees SET f_name = ?, l_name = ?, phone = ?, email = ? WHERE id = ?",
-                               (message["first_name"], message["last_name"], message["phone"], message["email"]))
+                               (message["first_name"], message["last_name"], message["phone"], message["email"], message["id"]))
                 conn.commit()
                 response = {"status": "success", "message": "Employee deleted"}
                 print("Updated employee entry in database")
