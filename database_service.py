@@ -25,3 +25,65 @@ def init_db():
     """)
     conn.commit()
     conn.close()
+
+
+def database_server():
+    init_db()
+    context = zmq.Context()
+    socket = context.socket(zmq.REP)
+    socket.bind("tcp://*:5555")
+    print("Database service running on port 5555....")
+
+    while True:
+        message = socket.recv_json()
+        command = message.get("command")
+        response = {}
+
+        conn = sqlite3.connect("employee_sys.db")
+        cursor = conn.cursor()
+
+        try:
+            if command == "add_employee":
+                cursor.execute("INSERT INTO employees (f_name, l_name, phone, email) VALUES (?, ?, ?, ?)",
+                               (message["first_name"], message["last_name"], message["phone"], message["email"]))
+                conn.commit()
+                response = {"status": "success", "message": "Employee added"}
+            elif command == "view_employees":
+                cursor.execute("SELECT f_name, l_name, phone, email FROM employees")
+                response = {"status": "success", "data": cursor.fetchall()}
+            elif command == "delete_employee":
+                cursor.execute("DELETE FROM employees WHERE id = ?", (message["id"]))
+                conn.commit()
+                response = {"status": "success", "message": "Employee deleted"}
+            elif command == "update_employee":
+                cursor.execute("UPDATE employees SET f_name = ?, l_name = ?, phone = ?, email = ? WHERE id = ?",
+                               (message["first_name"], message["last_name"], message["phone"], message["email"]))
+                conn.commit()
+                response = {"status": "success", "message": "Employee deleted"}
+            elif command == "add_paycheck":
+                cursor.execute("INSERT INTO paychecks (employee_id, hours, pay) VALUES (?, ?, ?)",
+                               (message["employee_id"], message["hours"], message["pay"]))
+                conn.commit()
+                response = {"status": "success", "message": "Paycheck added"}
+            elif command == "view_paychecks":
+                cursor.execute("SELECT * FROM paychecks WHERE ID = ?")
+                response = {"status": "succuss", "data": cursor.fetchall()}
+            elif command == "delete_paycheck":
+                cursor.execute("DELETE FROM paychecks WHERE ID = ?", (message["id"]))
+                conn.commit()
+                response = {"status": "succuss", "message": "Paycheck deleted"}
+            elif command == "update_paycheck":
+                cursor.execute("UPDATE paycheck SET employee_id = ?, hours = ?, pay = ? WHERE id = ?",
+                               (message["employee_id"], message["hours"], message["pay"]))
+                conn.commit()
+                response = {"status": "success", "message": "Paycheck deleted"}
+            else:
+                response = {"status": "error", "message": "Invalid command"}
+        except Exception as e:
+            response = {"status": "error", "message": str(e)}
+
+        conn.close()
+        socket.send_json(response)
+
+if __name__ == "__main__":
+    database_server()
