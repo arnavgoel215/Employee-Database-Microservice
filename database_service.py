@@ -37,7 +37,6 @@ def database_server():
     while True:
         message = socket.recv_json()
         command = message.get("command")
-        response = {}
 
         conn = sqlite3.connect("employee_sys.db")
         cursor = conn.cursor()
