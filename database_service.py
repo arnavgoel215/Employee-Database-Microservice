@@ -48,39 +48,49 @@ def database_server():
                                (message["first_name"], message["last_name"], message["phone"], message["email"]))
                 conn.commit()
                 response = {"status": "success", "message": "Employee added"}
+                print("Added employee to database")
             elif command == "view_employees":
                 cursor.execute("SELECT f_name, l_name, phone, email FROM employees")
                 response = {"status": "success", "data": cursor.fetchall()}
+                print("Sending list of employees")
             elif command == "delete_employee":
                 cursor.execute("DELETE FROM employees WHERE id = ?", (message["id"]))
                 conn.commit()
                 response = {"status": "success", "message": "Employee deleted"}
+                print("Deleted employee from database")
             elif command == "update_employee":
                 cursor.execute("UPDATE employees SET f_name = ?, l_name = ?, phone = ?, email = ? WHERE id = ?",
                                (message["first_name"], message["last_name"], message["phone"], message["email"]))
                 conn.commit()
                 response = {"status": "success", "message": "Employee deleted"}
+                print("Updated employee entry in database")
             elif command == "add_paycheck":
                 cursor.execute("INSERT INTO paychecks (employee_id, hours, pay) VALUES (?, ?, ?)",
                                (message["employee_id"], message["hours"], message["pay"]))
                 conn.commit()
                 response = {"status": "success", "message": "Paycheck added"}
+                print("Added paycheck to database")
             elif command == "view_paychecks":
                 cursor.execute("SELECT * FROM paychecks WHERE ID = ?")
                 response = {"status": "succuss", "data": cursor.fetchall()}
+                print("Sending list of paychecks")
             elif command == "delete_paycheck":
                 cursor.execute("DELETE FROM paychecks WHERE ID = ?", (message["id"]))
                 conn.commit()
                 response = {"status": "succuss", "message": "Paycheck deleted"}
+                print("Deleted paycheck from database")
             elif command == "update_paycheck":
                 cursor.execute("UPDATE paycheck SET employee_id = ?, hours = ?, pay = ? WHERE id = ?",
                                (message["employee_id"], message["hours"], message["pay"]))
                 conn.commit()
                 response = {"status": "success", "message": "Paycheck deleted"}
+                print("Updated paycheck entry in database")
             else:
                 response = {"status": "error", "message": "Invalid command"}
+                print("Error: invalid command")
         except Exception as e:
             response = {"status": "error", "message": str(e)}
+            print("Error: Exception")
 
         conn.close()
         socket.send_json(response)
