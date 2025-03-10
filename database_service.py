@@ -31,7 +31,7 @@ def database_server():
     init_db()
     context = zmq.Context()
     socket = context.socket(zmq.REP)
-    socket.bind("tcp://*:5555")
+    socket.bind("tcp://*:5556")
     print("Database service running on port 5555....")
 
     while True:
@@ -49,7 +49,7 @@ def database_server():
                 response = {"status": "success", "message": "Employee added"}
                 print("Added employee to database")
             elif command == "view_employees":
-                cursor.execute("SELECT f_name, l_name, phone, email FROM employees")
+                cursor.execute("SELECT * FROM employees")
                 response = {"status": "success", "data": cursor.fetchall()}
                 print("Sending list of employees")
             elif command == "delete_employee":
