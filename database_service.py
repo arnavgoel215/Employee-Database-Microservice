@@ -64,8 +64,8 @@ def database_server():
                 response = {"status": "success", "message": "Employee deleted"}
                 print("Updated employee entry in database")
             elif command == "add_paycheck":
-                cursor.execute("INSERT INTO paychecks (employee_id, hours, pay) VALUES (?, ?, ?)",
-                               (message["employee_id"], message["hours"], message["pay"]))
+                cursor.execute("INSERT INTO paychecks (employee_id, hours, rate, pay) VALUES (?, ?, ?, ?)",
+                               (message["employee_id"], message["hours"], message["rate"], message["pay"]))
                 conn.commit()
                 response = {"status": "success", "message": "Paycheck added"}
                 print("Added paycheck to database")
