@@ -19,6 +19,7 @@ def init_db():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             employee_id INTEGER NOT NULL,
             hours INTEGER NOT NULL,
+            rate INTEGER NOT NULL,
             pay REAL NOT NULL,
             FOREIGN KEY (employee_id) REFERENCES employees(id) on DELETE CASCADE 
         )
@@ -32,7 +33,7 @@ def database_server():
     context = zmq.Context()
     socket = context.socket(zmq.REP)
     socket.bind("tcp://*:5556")
-    print("Database service running on port 5555....")
+    print("Database service running on port 5556....")
 
     while True:
         message = socket.recv_json()
@@ -70,7 +71,7 @@ def database_server():
                 response = {"status": "success", "message": "Paycheck added"}
                 print("Added paycheck to database")
             elif command == "view_paychecks":
-                cursor.execute("SELECT * FROM paychecks WHERE ID = ?")
+                cursor.execute("SELECT * FROM paychecks")
                 response = {"status": "succuss", "data": cursor.fetchall()}
                 print("Sending list of paychecks")
             elif command == "delete_paycheck":
@@ -89,7 +90,7 @@ def database_server():
                 print("Error: invalid command")
         except Exception as e:
             response = {"status": "error", "message": str(e)}
-            print("Error: Exception")
+            print(f"Error: {str(e)}")
 
         conn.close()
         socket.send_json(response)
